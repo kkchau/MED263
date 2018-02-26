@@ -3,6 +3,6 @@ Final project for MED263 (Bioinformatics Applications to Human Disease): Gene Co
 
 ## Instructions
 Docker:
-    ```sh
+    ```
     docker run -it -p 8888:8888 /your/working/directory:/work kkhaichau/weighted_networks
     ```
