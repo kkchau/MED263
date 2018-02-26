@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
     apt-transport-https \
     build-essential \
     curl \
+    libcurl4-openssl-dev \
+    libssl-dev \
     libzmq3-dev \
     vim \
     wget

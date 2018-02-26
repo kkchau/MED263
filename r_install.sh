@@ -14,7 +14,6 @@ Rscript r_kernel.R
 # relevant r packages
 cat > r_deps.R << EOM
 install.packages(c("matrixStats", "Hmisc", "splines", "foreach", "doParallel", "fastcluster", "dynamicTreeCut", "survival"), repos="https://cran.cnr.berkeley.edu")
-
 source("https://bioconductor.org/biocLite.R")
 biocLite(c("GO.db", "preprocessCore", "impute"))
 biocLite("WGCNA")
