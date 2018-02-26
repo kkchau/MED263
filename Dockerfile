@@ -26,6 +26,9 @@ RUN apt-get install -y wget && \
     wget https://raw.githubusercontent.com/kkchau/MED263/master/r_install.sh && \
     bash r_install.sh
 
+# download the jupyter notebook
+wget https://raw.githubusercontent.com/kkchau/MED263/master/CoExNetworks.ipynb
+
 RUN mkdir /work
 
 ENV HOME=/work

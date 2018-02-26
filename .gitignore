@@ -1,1 +1,7 @@
 ~$*
+*.swp
+*.txt
+*.csv
+
+.ipynb_checkpoints/
+.local/
