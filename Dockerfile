@@ -22,4 +22,8 @@ RUN apt-get install -y wget && \
 
 WORKDIR /work
 
-ENTRYPOINT ["jupyter", "notebook", "--ip=*"]
+RUN useradd -ms /bin/bash jovyan
+
+USER jovyan
+
+ENTRYPOINT ["jupyter", "console", "--ip=*", "--kernel=ir34"]

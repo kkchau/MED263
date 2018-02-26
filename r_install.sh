@@ -7,7 +7,7 @@ cd /opt
 cat > r_kernel.R << EOM
 install.packages(c("repr", "IRdisplay", "evaluate", "crayon", "pbdZMQ", "devtools", "uuid", "digest"))
 devtools::install_github("IRkernel/IRkernel")
-IRkernel::installspec()
+IRkernel::installspec(name='ir34')
 EOM
 Rscript r_kernel.R
 
