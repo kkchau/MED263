@@ -2,6 +2,8 @@ FROM r-base
 
 MAINTAINER Kevin Chau "kkchau@ucsd.edu"
 
+USER root
+
 # install packages
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -26,4 +28,4 @@ RUN useradd -ms /bin/bash jovyan
 
 USER jovyan
 
-ENTRYPOINT ["jupyter", "console", "--ip=*", "--kernel=ir34"]
+ENTRYPOINT ["jupyter", "notebook", "--ip=*"]
