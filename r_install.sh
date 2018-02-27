@@ -1,6 +1,6 @@
 # install latest R
-echo "deb https://cran.cnr.berkeley.edu/bin/linux/ubuntu xenial/" >> /etc/apt/sources.list
-apt-get update -y && apt-get install -y r-base
+#echo "deb https://cran.cnr.berkeley.edu/bin/linux/ubuntu xenial/" >> /etc/apt/sources.list
+#apt-get update -y && apt-get install -y r-base
 
 # relevant r packages
 cat > r_deps.R << EOM
@@ -12,5 +12,3 @@ biocLite("WGCNA")
 biocLite("SummarizedExperiment")
 EOM
 Rscript r_deps.R
-
-cd /
