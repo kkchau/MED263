@@ -1,12 +1,12 @@
-FROM r-base
+FROM jupyter/r-notebook
 
 MAINTAINER Kevin Chau "kkchau@ucsd.edu"
 
 USER root
 
 # install packages
-RUN apt-get update && apt-get install -y \
-    apt-transport-https \
+RUN sudo apt-get update && apt-get install -y \
+    sudo apt-transport-https \
     build-essential \
     curl \
     libcurl4-openssl-dev \
@@ -16,26 +16,11 @@ RUN apt-get update && apt-get install -y \
     vim \
     wget
 
-# get jupyter
-RUN apt-get install -y \
-    python3 \
-    python3-pip
-RUN pip3 install jupyter
-
 # setup R
-RUN apt-get install -y wget && \
-    wget https://raw.githubusercontent.com/kkchau/MED263/master/r_install.sh && \
+RUN wget https://raw.githubusercontent.com/kkchau/MED263/master/r_install.sh && \
     bash r_install.sh
 
 # download the jupyter notebook
 RUN wget https://raw.githubusercontent.com/kkchau/MED263/master/CoExNetworks.ipynb
 
-RUN mkdir /work
-
-ENV HOME=/work
-
-EXPOSE 8888
-
-WORKDIR /work
-
-ENTRYPOINT ["jupyter", "notebook", "--ip=*", "--allow-root"]
+USER jovyan
