@@ -24,3 +24,5 @@ RUN wget https://raw.githubusercontent.com/kkchau/MED263/master/r_install.sh && 
 RUN wget https://raw.githubusercontent.com/kkchau/MED263/master/CoExNetworks.ipynb
 
 USER jovyan
+
+WORKDIR /home/jovyan/work
