@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     libcurl4-openssl-dev \
     libssl-dev \
+    libv8-3.14-dev \
     libzmq3-dev \
     vim \
     wget

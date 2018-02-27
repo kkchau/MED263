@@ -3,5 +3,6 @@
 *.txt
 *.csv
 
+brainSpan/
 .ipynb_checkpoints/
 .local/
