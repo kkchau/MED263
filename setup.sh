@@ -11,7 +11,10 @@ libzmq3-dev
 
 # relevant r packages
 cat > /home/jovyan/r_deps.R << EOM
-install.packages(c("matrixStats", "Hmisc", "splines", "foreach", "doParallel", "fastcluster", "dynamicTreeCut", "survival", "viridisLite"), repos="https://cran.cnr.berkeley.edu")
+install.packages(c("matrixStats", "Hmisc", "splines", "foreach", "doParallel", 
+                   "fastcluster", "dynamicTreeCut", "survival", "viridisLite",
+                   "ggplot2"
+                   ), repos="https://cran.cnr.berkeley.edu")
 source("https://bioconductor.org/biocLite.R")
 biocLite(c("GO.db", "preprocessCore", "impute"))
 biocLite("WGCNA")
