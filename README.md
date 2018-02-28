@@ -3,10 +3,9 @@ Final project for MED263 (Bioinformatics Applications to Human Disease): Gene Co
 
 ## Instructions
 ```shell
-docker run -it -p 8888:8888 /your/working/directory:/home/jovyan/work --user root -e NB_GID=100 -e GRANT_SUDO=yes kkhaichau/weighted_networks
+docker run -p 8787:8787 /your/working/directory:/home/rstudio/work kkhaichau/weighted_networks
 ```
-Now, open the Jupyter server and create a new terminal. In the terminal, run
-```shell
-sudo sh ../setup.sh
-```
-This will install all packages and dependencies, as well as download the CoExNetworks Jupyter notebook. Close the terminal and open the notebook.
+This Docker images runs based on rocker/verse and provides the necessary packages, data files, and R Markdown file
+Recommended Docker settings include:
+* CPUs: 2
+* Memory: 4096 MB
