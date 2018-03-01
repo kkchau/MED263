@@ -1,6 +1,8 @@
 ---
 title: "Identifying Gene Co-Expression Modules in the Developing Human Brain"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 **Course**: MED263, "Bioinformatics Applications to Human Disease"  
 **Preparer**: Kevin Chau (kkchau@ucsd.edu) (https://github.com/kkchau/MED263)
@@ -51,11 +53,14 @@ NOTE: If running from the Docker container, the data files will already be downl
 # utils::unzip("brainSpan.zip", exdir="/home/rstudio/brainSpan")
 # file.remove("brainSpan.zip")
 ```
+&copy; 2010 Allen Institute for Brain Science. BrainSpan Atlas of the Developing Human Brain. Available from: https://brainspan.org
+
 The downloaded files consist of a RPKM expression matrix, sample metadata, and row metadata, along with a readme file.
-### Question 1
+
+**Question 1**  
 How were expressions compiled (what were the tools used for alignment/quantification) and what was the reference?
 
-### Answer
+**Answer**  
 Read alignment was performed with Tophat using Gencode v10 annotations; quantification was done with SAMtools and RSEQtools (this can be found in the whitepaper from https://brainspan.org)
 
 Next, we want to package the relevant data and metadata together into a single SummarizedExperiment. This is done to protect the integrity of the data and safeguard value mappings, yielding a nice reference in case any downstream analysis goes wrong.
@@ -82,18 +87,17 @@ se.expr <- SummarizedExperiment(assays=list(rpkm=as.matrix(expr)),
                                 )
 se.expr
 ```
-
 The se.expr SummarizedExperiment object is essentially a collection of matrices linked by the appropriate mappings; that is, the columns of the assays (in this case, the rpkm assay) correspond to the "colnames" of the SummarizedExperiment, which in turn have the attributes listed in the "colData" field. The same concept applies to the rownames and rowData.
 
 # Methods and Results
+
 ## Data filtering
+
 ### Expression filtering
 Now, we will filter this expression data for lowly expressed genes since these features are likely representative of noise in the dataset. Additionally, this will reduce the size of the data and make it more managable for the more computationally intensive steps to follow. We first plot the density plot of the expression distribution to identify a suitable cutoff value.
-
 ```{r fig.align='center'}
 hist(assays(se.expr)$rpkm, xlim=c(0, 10), breaks=100000)
 ```
-
 Given this plot we select an expression cutoff of 5 RPKM in at least 80% of samples (this is a very strict threshold, but it is necessary to reduce the data to a manageable size for the default Docker memory settings).
 ```{r}
 se.expr.filt <- se.expr[apply(assays(se.expr)$rpkm >= 5, 1, sum) >= 0.9*ncol(se.expr),]
@@ -109,10 +113,10 @@ NOTE: Given memory constraints the following code is not executed
 # sampleClust <- hclust(dist(assays(se.expr)$rpkm), method='average')
 ```
 
-### Question 2
+**Question 2**
 Which five genes have the highest overall (average across samples) expression?
 
-### Answer
+**Answer**
 
 ## Soft thresholding
 A stipulation of WGCNA network construction is that the data should satisfy the scale-free topology criteria. Scale-free networks are networks whose degree distributions (the number of neighbors per node) follows a power function, such that there are few nodes with a large number of neighbors whereas the rest of the nodes have few neighbors. This gives rise to "network hubs," and biologically this implies that there are fewer "vulnerable" genes such that their disruption results in the shutting down of a pathway, for example.  
@@ -164,10 +168,10 @@ conplt <- (ggplot(soft.thresh$fitIndices,
 grid.arrange(sftplt, conplt, ncol=2)
 ```
 
-### Question 3
+**Question 3**
 What should we select as the power level for this data set?
 
-### Answer
+**Answer**
 Some integer around 15. This is the point where we have sufficient correlation with the scale-free topology criterion. Choosing a greater value leads to decreased connectivity. This is also the value reported in *soft.thresh$powerEstimate*.
 
 ## Adjacencies and the Topological Overlap Matrix
@@ -202,6 +206,12 @@ plotDendroAndColors(dendro=geneTree, colors=dynCol, dendroLabels=FALSE,
                     )
 ```
 
+**Question 4**
+What is a likely cause of such a large grey module?
+
+**Answer**
+Due to such strict thresholding, many genes are now left with insufficient co-expression neighbors and thus do not make the clustering cutoff.
+
 We can further refine the module identification by clustering highly correlated modules together. This is done based on the "module eigengenes," or representative vectors of each module that incorporates an average expression pattern of the module members. We will use a correlation of 0.8 as the merging threshold.
 ```{r fig.align='center', fig.height=10, fig.width=13}
 mergeThresh <- 1 - 0.8
@@ -234,7 +244,7 @@ rowData(se.expr.filt)$module <- mergedCol
 We can also export each module and their members into separate text files.
 ```{r}
 # Create directory for modules
-dir.create("/home/rstudio/work/modules")
+dir.create("/home/rstudio/work/modules", showWarnings=F)
 for (clr in unique(rowData(se.expr.filt)$module)) {
     fname <- paste0("/home/rstudio/work/modules/", clr, ".module")
     write.table(row.names(se.expr.filt)[rowData(se.expr.filt)$module==clr],
@@ -242,3 +252,13 @@ for (clr in unique(rowData(se.expr.filt)$module)) {
 }
 ```
 
+## Functional Enrichment Analysis
+
+```{r}
+sessionInfo()
+```
+
+
+# References
+1.  Langfelder, P., & Horvath, S. (2008). WGCNA: an R package for weighted correlation network analysis. BMC Bioinformatics, 9, 559. http://doi.org/10.1186/1471-2105-9-559
+2.  Chen, E. Y., Tan, C. M., Kou, Y., Duan, Q., Wang, Z., Meirelles, G. V., … Ma’ayan, A. (2013). Enrichr: interactive and collaborative HTML5 gene list enrichment analysis tool. BMC Bioinformatics, 14, 128. http://doi.org/10.1186/1471-2105-14-128
