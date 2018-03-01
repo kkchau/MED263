@@ -8,7 +8,7 @@ docker run -p 8787:8787 /your/working/directory:/home/rstudio/work kkhaichau/wei
 Then, launch a web browser and navigate to localhost:8787  
 
 ---
-This Docker images runs based on rocker/verse and provides the necessary packages, data files, and R Markdown file
+This Docker image runs based on rocker/verse and provides the necessary packages, data files, and R Markdown file
 Recommended Docker settings include:
 * CPUs: 2
 * Memory: 4096 MB
