@@ -1,3 +1,4 @@
+# TODO: Add BrainSpan data, Rmd notebook
 FROM rocker/verse
 
 MAINTAINER Kevin Chau "kkchau@ucsd.edu"
