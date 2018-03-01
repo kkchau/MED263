@@ -5,7 +5,8 @@ Final project for MED263 (Bioinformatics Applications to Human Disease): Gene Co
 ```shell
 docker run -p 8787:8787 /your/working/directory:/home/rstudio/work kkhaichau/weighted_networks
 ```
-Then, launch a web browser and navigate to localhost:8787
+Then, launch a web browser and navigate to localhost:8787  
+
 ---
 This Docker images runs based on rocker/verse and provides the necessary packages, data files, and R Markdown file
 Recommended Docker settings include:
