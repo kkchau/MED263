@@ -1,4 +1,4 @@
-# MED263
+# Weighted Co-Expression Networks and Functional Enrichment Analysis in R
 Final project for MED263 (Bioinformatics Applications to Human Disease): Gene Co-Expression Networks with WGCNA
 
 This Docker image runs based on rocker/verse and provides the necessary 
