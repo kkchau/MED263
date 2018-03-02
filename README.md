@@ -1,7 +1,7 @@
 # Weighted Co-Expression Networks and Functional Enrichment Analysis in R
 Final project for MED263 (Bioinformatics Applications to Human Disease): Gene Co-Expression Networks with WGCNA
 
-TODO: change url in html and pdf to reflect new repo name, remove sample clustering
+TODO: change url in html and pdf to reflect new repo name, remove sample clustering, adjust font sizes for plots, mergCol integrity check, members.as.symbols code gets cutoff
 
 This Docker image runs based on rocker/verse and provides the necessary 
 packages, data files, and R Markdown file for a WGCNA-based gene co-expression 
