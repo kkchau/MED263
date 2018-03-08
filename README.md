@@ -13,6 +13,10 @@ docker run -p 8787:8787 -v /your/working/directory:/home/rstudio/work kkhaichau/
 ```
 Then, launch a web browser, navigate to localhost:8787, and run the tutorial.  
 
+LOGIN:  
+Username = rstudio  
+Password = rstudio
+
 ---
 Recommended Docker settings include:
 * CPUs: 2
