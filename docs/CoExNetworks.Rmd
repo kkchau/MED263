@@ -18,6 +18,17 @@ We will be using WGCNA for the actual network construction; data will be organiz
 ```{r}
 setwd("/home/rstudio/work")
 ```
+
+```{r}
+# ggplot standard theming
+theme.standard <- theme(text=element_text(size=15),
+                   panel.grid.major=element_blank(),
+                   panel.grid.minor=element_blank(),
+                   panel.background=element_blank(),
+                   axis.line=element_line())
+```
+
+
 ```{r}
 # install.packages(c('matrixStats', 'Hmisc', 'splines', 
 #                    'foreach', 'doParallel', 'fastcluster',
@@ -70,9 +81,9 @@ Read alignment was performed with Tophat using Gencode v10 annotations; quantifi
 
 Next, we want to package the relevant data and metadata together into a single SummarizedExperiment. This is done to protect the integrity of the data and safeguard value mappings, yielding a nice reference in case any downstream analysis goes wrong.
 ```{r}
-expr <- read.csv("/home/rstudio/brainSpan/expression_matrix.csv", header=FALSE)[, -1]
-coldata <- read.csv("/home/rstudio/brainSpan/columns_metadata.csv")[, -1]
-rowdata <- read.csv("/home/rstudio/brainSpan/rows_metadata.csv")[, -1]
+expr <- read.csv("/home/rstudio/data/brainSpan/expression_matrix.csv", header=FALSE)[, -1]
+coldata <- read.csv("/home/rstudio/data/brainSpan/columns_metadata.csv")[, -1]
+rowdata <- read.csv("/home/rstudio/data/brainSpan/rows_metadata.csv")[, -1]
 
 row.names(expr) <- rowdata$ensembl_gene_id
 colnames(expr) <- as.character(apply(coldata, 1, 
@@ -129,7 +140,7 @@ soft.thresh <- pickSoftThreshold(t(assays(se.expr.filt)$rpkm),
 
 
 We can then plot the R^2 fit to the scale-free topology of the different power levels as well as the mean connectivity.
-```{r fig.width=12, fig.height=10}
+```{r fig.width=12, fig.height=7}
 sftplt <- (ggplot(soft.thresh$fitIndices, 
                   aes(x=soft.thresh$fitIndices$Power,
                       y=(-sign(soft.thresh$fitIndices$slope)
@@ -145,11 +156,7 @@ sftplt <- (ggplot(soft.thresh$fitIndices,
                   y="R^2 Scale-Free Topology Fit", 
                   title="Scale-Free Topology Fit"
                   )
-           + theme(text=element_text(size=10),
-                   panel.grid.major=element_blank(),
-                   panel.grid.minor=element_blank(),
-                   panel.background=element_blank(),
-                   axis.line=element_line())
+           + theme.standard
            )
 conplt <- (ggplot(soft.thresh$fitIndices, 
                   aes(x=soft.thresh$fitIndices$Power,
@@ -160,11 +167,7 @@ conplt <- (ggplot(soft.thresh$fitIndices,
                   y="Mean Connectivity", 
                   title="Mean Connectivity per Power Level"
                   )
-           + theme(text=element_text(size=10),
-                   panel.grid.major=element_blank(),
-                   panel.grid.minor=element_blank(),
-                   panel.background=element_blank(),
-                   axis.line=element_line())
+           + theme.standard
            )
 grid.arrange(sftplt, conplt, ncol=2)
 ```
@@ -186,7 +189,7 @@ distom <- 1 - tom
 
 ## Clustering of the TOM
 We can perform hierarchical clustering on this TOM to cluster genes together
-```{r}
+```{r fig.width=12, fig.height=7}
 geneTree <- hclust(as.dist(distom), method='average')
 ```
 ```{r fig.width=15, fig.height=10, fig.align='center'}
@@ -201,7 +204,7 @@ table(dynMods)
 ```
 
 This result shows that we have identified 25 modules (module 0 represents genes that cannot be classified into another module). We can plot module assignment under the dendrogram.
-```{r fig.align='center', fig.height=10, fig.width=12}
+```{r fig.align='center', fig.height=7, fig.width=12}
 dynCol <- labels2colors(dynMods)
 plotDendroAndColors(dendro=geneTree, colors=dynCol, dendroLabels=FALSE, 
                     main="Dynamically Cut TOM Dendrogram", groupLabels="Dynamic Colors"
@@ -215,7 +218,7 @@ What is a likely cause of such a large grey module?
 Due to such strict thresholding, many genes are now left with insufficient co-expression neighbors and thus do not make the clustering cutoff.
 
 We can further refine the module identification by clustering highly correlated modules together. This is done based on the "module eigengenes," or representative vectors of each module that incorporates an average expression pattern of the module members. We will use a correlation of 0.8 as the merging threshold.
-```{r fig.align='center', fig.height=10, fig.width=13}
+```{r fig.align='center', fig.height=7, fig.width=13}
 mergeThresh <- 1 - 0.8
 MEs <- moduleEigengenes(t(assays(se.expr.filt)$rpkm), colors=dynCol)$eigengenes
 disMEs <- 1 - cor(MEs)
@@ -231,7 +234,7 @@ table(mergedCol)
 ```
 
 We can now plot the result of the merge
-```{r fig.align='center', fig.width=12, fig.height=10}
+```{r fig.align='center', fig.width=12, fig.height=7}
 plotDendroAndColors(dendro=geneTree, colors=cbind(dynCol, mergedCol), 
                     groupLabels=c("Dynamic Colors", "Merged Colors"),
                     dendroLabels=FALSE, main="Merged Module Dendrogram"
@@ -287,6 +290,23 @@ What does each column represent? What is the top GO term in the darkgreen module
 
 **Answer**
 Columns can be found by exploring the *this.experiment$GO_Biological_Process_2017* matrix; they are 'Term', 'Overlap', 'P.value', 'Adjusted.P.value', 'Z.score', and 'Genes'. The top GO term in the darkgreen module is nervous system development with an adjusted p-value of 2.227390e-24.
+
+We can furthermore visualize the significant GO terms for each module. For example,
+```{r fig.width=15}
+dark.green.enrich <- read.csv(file = "/home/rstudio/work/enrichment/darkgreen.module.enrich",
+                              skip = 1,
+                              header = FALSE,
+                              sep = '\t')
+dg.labels <- dark.green.enrich$V1[order(dark.green.enrich$V4)]
+dark.green.enrich$V4 <- -log10(dark.green.enrich$V4)
+# adjusted pvalue is col 4
+ggplot(dark.green.enrich, aes(x = reorder(V1, V4), y = V4)) + 
+  geom_bar(stat = "identity") + 
+  coord_flip() + 
+  labs(x = "", y = "-log(P-Value)", 
+       title = "GO Enrichment of DarkGreen Module") + 
+  theme.standard
+```
 
 
 ```{r}
