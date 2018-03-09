@@ -100,7 +100,7 @@ Now, we will filter this expression data for lowly expressed genes since these f
 ```{r}
 hist(assays(se.expr)$rpkm, xlim=c(0, 10), breaks=100000)
 ```
-Given this plot we select an expression cutoff of 5 RPKM in at least 80% of samples (this is a very strict threshold, but it is necessary to reduce the data to a manageable size for the default Docker memory settings).
+Given this plot we select an expression cutoff of 5 RPKM in at least 90% of samples (this is a very strict threshold, but it is necessary to reduce the data to a manageable size for the default Docker memory settings).
 ```{r}
 se.expr.filt <- se.expr[apply(assays(se.expr)$rpkm >= 5, 1, sum) >= 0.9*ncol(se.expr),]
 
