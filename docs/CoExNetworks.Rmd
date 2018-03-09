@@ -20,20 +20,10 @@ setwd("/home/rstudio/work")
 ```
 
 ```{r}
-# ggplot standard theming
-theme.standard <- theme(text=element_text(size=15),
-                   panel.grid.major=element_blank(),
-                   panel.grid.minor=element_blank(),
-                   panel.background=element_blank(),
-                   axis.line=element_line())
-```
-
-
-```{r}
 # install.packages(c('matrixStats', 'Hmisc', 'splines', 
 #                    'foreach', 'doParallel', 'fastcluster',
 #                    'dynamicTreeCut', 'survival', 'viridisLite',
-#                    'ggplot2', 'enrichR')
+#                    'enrichR', 'tidyverse')
 # source("https://bioconductor.org/biocLite.R")
 # biocLite(c('GO.db', 'preprocessCore', 'imput', 'WGCNA', 'SummarizedExperiment'))
 ```
@@ -46,6 +36,7 @@ library(SummarizedExperiment)
 library(enrichR)
 library(ggplot2)
 library(gridExtra)
+library(dyplr)
 ```
 ```{r}
 ### Optional:
@@ -58,6 +49,14 @@ library(doParallel)
 allowWGCNAThreads()
 ```
 
+```{r}
+# ggplot standard theming
+theme.standard <- theme(text=element_text(size=15),
+                   panel.grid.major=element_blank(),
+                   panel.grid.minor=element_blank(),
+                   panel.background=element_blank(),
+                   axis.line=element_line())
+```
 
 # Data
 

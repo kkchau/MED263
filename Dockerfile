@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 RUN R -e "install.packages(c('matrixStats', 'Hmisc', 'splines', \
                              'foreach', 'doParallel', 'fastcluster', \
                              'dynamicTreeCut', 'survival', 'viridisLite', \
-                             'ggplot2', 'enrichR'), \
+                             'enrichR', 'tidyverse'), \
                              repos='https://cran.cnr.berkeley.edu')"
 
 RUN R -e "source('https://bioconductor.org/biocLite.R'); \
