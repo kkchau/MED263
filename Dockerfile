@@ -20,7 +20,7 @@ RUN R -e "source('https://bioconductor.org/biocLite.R'); \
                      'WGCNA', 'SummarizedExperiment'))"
 
 RUN mkdir /home/rstudio/work
-ADD brainSpan /home/rstudio/brainSpan
+ADD data /home/rstudio/data
 ADD docs/CoExNetworks.Rmd /home/rstudio/CoExNetworks.Rmd
 
 WORKDIR /home/rstudio/work

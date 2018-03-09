@@ -4,4 +4,4 @@
 *.csv
 
 .local/
-brainSpan/
+data/
