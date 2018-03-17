@@ -16,6 +16,12 @@ Note: For reference, the following code was executed in a Docker container alloc
 ## Set-Up
 We will be using WGCNA for the actual network construction; data will be organized into *SummarizedExperiment* objects for ease of use. All of the following packages should already be installed if running from the corresponding Docker container.
 ```{r}
+dataDir <- "/home/rstudio/data"
+workDir <- "/home/rstudio/work"
+```
+
+
+```{r}
 setwd("/home/rstudio/work")
 ```
 
@@ -28,7 +34,6 @@ setwd("/home/rstudio/work")
 # biocLite(c('GO.db', 'preprocessCore', 'imput', 'WGCNA', 'SummarizedExperiment'))
 ```
 
-
 ## Libraries
 ```{r}
 library(WGCNA)
@@ -36,8 +41,9 @@ library(SummarizedExperiment)
 library(enrichR)
 library(ggplot2)
 library(gridExtra)
-library(dyplr)
+library(dplyr)
 ```
+
 ```{r}
 ### Optional:
 # Enable parallel processing for computationally intensive tasks 
@@ -80,9 +86,10 @@ Read alignment was performed with Tophat using Gencode v10 annotations; quantifi
 
 Next, we want to package the relevant data and metadata together into a single SummarizedExperiment. This is done to protect the integrity of the data and safeguard value mappings, yielding a nice reference in case any downstream analysis goes wrong.
 ```{r}
-expr <- read.csv("/home/rstudio/data/brainSpan/expression_matrix.csv", header=FALSE)[, -1]
-coldata <- read.csv("/home/rstudio/data/brainSpan/columns_metadata.csv")[, -1]
-rowdata <- read.csv("/home/rstudio/data/brainSpan/rows_metadata.csv")[, -1]
+expr <- read.csv(paste(dataDir, "brainSpan/expression_matrix.csv", sep = "/"), 
+                 header=FALSE)[, -1]
+coldata <- read.csv(paste(dataDir, "/brainSpan/columns_metadata.csv", sep = "/"))[, -1]
+rowdata <- read.csv(paste(dataDir, "/brainSpan/rows_metadata.csv", sep = "/"))[, -1]
 
 row.names(expr) <- rowdata$ensembl_gene_id
 colnames(expr) <- as.character(apply(coldata, 1, 
@@ -248,9 +255,9 @@ rowData(se.expr.filt)$module <- mergedCol
 We can also export each module and their members into separate text files.
 ```{r}
 # Create directory for modules
-dir.create("/home/rstudio/work/modules", showWarnings=F)
+dir.create(paste(workDir, "modules", sep = "/"), showWarnings=F)
 for (clr in unique(rowData(se.expr.filt)$module)) {
-    fname <- paste0("/home/rstudio/work/modules/", clr, ".module")
+    fname <- paste0(paste(workDir, "modules/", sep = "/"), clr, ".module")
     write.table(row.names(se.expr.filt)[rowData(se.expr.filt)$module==clr],
                 file=fname, sep='\n', quote=F, row.names=F, col.names=F)
 }
@@ -262,20 +269,20 @@ Functional enrichment analysis will be done with the *enrichR* package. Here, we
 *EnrichR* is a tool that takes a list of gene symbols, compares that list to a specified background database, and outputs the enrichment. In our case, we will be using the 'GO_Biological_Process_2017' database to query for Gene Ontology terms related to biological processes.
 ```{r}
 # Create enrichment directory
-dir.create("/home/rstudio/work/enrichment", showWarnings=F)
+dir.create(paste(workDir, "enrichment", sep = "/"), showWarnings=F)
 db <- 'GO_Biological_Process_2017'
 # We can ignore the grey module since those genes are just unassigned nodes
-for (fmod in list.files("/home/rstudio/work/modules", 
+for (fmod in list.files(paste(workDir, "modules", sep = "/"), 
                         full.names=TRUE, 
                         pattern="*.module")
      ) {
-    if (fmod == "/home/rstudio/work/modules/grey.module") { next }
+    if (fmod == paste(workDir, "modules/grey.module", sep = "/")) { next }
     # Get module color
-    ofilename <- paste("/home/rstudio/work/enrichment/", 
-                       unlist(strsplit(fmod, "/"))[[6]], 
-                       ".enrich", 
-                       sep=""
-                       )
+    len.of.name <- length(unlist(strsplit(fmod, "/")))
+    ofilename <- paste(paste(workDir, "enrichment", 
+                             unlist(strsplit(fmod, "/"))[[len.of.name]], sep = "/"),
+                       ".enrich",
+                       sep = "")
     mod.members <- scan(fmod, what=character())
     mem.as.sym <- rowData(se.expr.filt)$gene_symbol[rowData(se.expr.filt)$ensembl_gene_id 
                                                     %in% mod.members]
@@ -292,7 +299,7 @@ Columns can be found by exploring the *this.experiment$GO_Biological_Process_201
 
 We can furthermore visualize the significant GO terms for each module. For example,
 ```{r fig.width=15}
-dark.green.enrich <- read.csv(file = "/home/rstudio/work/enrichment/darkgreen.module.enrich",
+dark.green.enrich <- read.csv(file = paste(workDir, "enrichment/darkgreen.module.enrich", sep = "/"),
                               skip = 1,
                               header = FALSE,
                               sep = '\t')
